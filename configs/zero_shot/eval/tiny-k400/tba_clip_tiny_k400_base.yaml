@@ -1,0 +1,16 @@
+DATA:
+    ROOT: '/root/autodl-fs/tk400/'
+    TRAIN_FILE: 'datasets_splits/k400_splits/tiny-k400_dataset.txt'
+    VAL_FILE: 'datasets_splits/k400_splits/tiny-k400_dataset.txt'
+    DATASET: kinetics400
+    NUM_FRAMES:
+    NUM_CLASSES: 160
+    LABEL_LIST: 'labels/ZS_split1_K600.csv'
+MODEL:
+    ARCH: ViT-B/16
+TRAIN:
+    BATCH_SIZE: 4  # effective BS 64
+    ACCUMULATION_STEPS: 4
+    EPOCHS: 50
+    LR: 2.e-6
+SAVE_FREQ: 10
