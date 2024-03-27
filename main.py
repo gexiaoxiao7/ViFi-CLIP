@@ -248,19 +248,7 @@ if __name__ == '__main__':
     # prepare config
     args, config = parse_option()
 
-    # init_distributed
-    if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
-        rank = int(os.environ["RANK"])
-        world_size = int(os.environ['WORLD_SIZE'])
-        print(f"RANK and WORLD_SIZE in environ: {rank}/{world_size}")
-    else:
-        rank = -1
-        world_size = -1
-    torch.cuda.set_device(args.local_rank)
-    torch.distributed.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
-    torch.distributed.barrier(device_ids=[args.local_rank])
-
-    seed = config.SEED + dist.get_rank()
+    seed = config.SEED
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -270,12 +258,11 @@ if __name__ == '__main__':
     Path(config.OUTPUT).mkdir(parents=True, exist_ok=True)
 
     # logger
-    logger = create_logger(output_dir=config.OUTPUT, dist_rank=dist.get_rank(), name=f"{config.MODEL.ARCH}")
+    logger = create_logger(output_dir=config.OUTPUT, name=f"{config.MODEL.ARCH}")
     logger.info(f"working dir: {config.OUTPUT}")
 
-    # save config 
-    if dist.get_rank() == 0:
-        logger.info(config)
-        shutil.copy(args.config, config.OUTPUT)
+    # save config
+    logger.info(config)
+    shutil.copy(args.config, config.OUTPUT)
 
     main(config)
